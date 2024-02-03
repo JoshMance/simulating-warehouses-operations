@@ -2,6 +2,11 @@
     "files.associations": {
         "ostream": "cpp",
         "iostream": "cpp",
-        "typeinfo": "cpp"
-    }
+        "typeinfo": "cpp",
+        "valarray": "cpp"
+    },
+    "cSpell.words": [
+        "floorplan",
+        "Mance"
+    ]
 }
