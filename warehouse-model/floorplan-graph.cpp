@@ -77,7 +77,7 @@ int main() {
     int transition_table[walkable_area][NUM_ACTIONS]; // + num_tickets];
     memset(transition_table, -1, sizeof(int) * walkable_area * NUM_ACTIONS);
 
-    int min_distances_table[walkable_area][walkable_area];
+    int distances_table[walkable_area][walkable_area];
 
     // Filling the grid with -1s where shelves are, and a unique id for each
     // location without a shelf (i.e. a walkway).
@@ -154,8 +154,8 @@ int main() {
                 }
                 distance++;
             }
-            min_distances_table[source_id][destination_id] = distance;
-            min_distances_table[destination_id][source_id] = distance;
+            distances_table[source_id][destination_id] = distance;
+            distances_table[destination_id][source_id] = distance;
         }
     }
     
@@ -180,7 +180,7 @@ int main() {
 
     for (int i = 0; i < walkable_area; ++i) {
         for (int j = 0; j < walkable_area; ++j) {
-            cout << min_distances_table[i][j] << " ";
+            cout << distances_table[i][j] << " ";
         }
         cout << endl;
     }  
