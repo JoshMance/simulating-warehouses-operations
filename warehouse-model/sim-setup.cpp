@@ -1,10 +1,13 @@
 /**
- * @file floorplan-graph.cpp
+ * @file sim-setup.cpp
  * @author Joshua Mance
- * @brief Creates 2d grid representing discrete locations a given warehouse, a transition table that encodes
- *        all possible movements within this grid and a matrix storing the distances between all locations.
+ * @brief Returns four data structures that define the simulation environment. 
+ *        These are: (1) a 2d grid of discrete locations (including shelving) in a warehouse,
+*                    (2) a transition table encoding all possible movements within the grid,
+*                    (3) a matrix storing the distances between all (non-shelving) locations and
+*                    (4) a list of the location index numbers for each product. 
  * @version 1
- * @date 2024-02-05
+ * @date 2024-02-06
  * @copyright Copyright (c) 2024
  */
 
@@ -12,41 +15,50 @@
 #include <string.h>
 #include <algorithm> 
 #include <queue>  
-//#include "../matplotlibcpp.h"
 using namespace std;
 
-
-int NUM_ACTIONS = 9;       // The number of neighboring cells (including the current cell)
-                           // that an agent can move to.
-
-int SHELF_SIZE_ROW = 1;    // Row and column dimensions of a shelf
-int SHELF_SIZE_COL = 2;     
-
-int GAP_SIZE_ROW = 2;      // Row and column distances between shelves
-int GAP_SIZE_COL = 1;    
-
-int NUM_SHELVES_ROW = 1;   // The number of shelves along the row and column dimensions
-int NUM_SHELVES_COL = 1;
-
-
-// Calculating the required number of rows and columns in the grid
-int num_rows = NUM_SHELVES_ROW*(GAP_SIZE_ROW + SHELF_SIZE_ROW) + GAP_SIZE_ROW;
-int num_cols = NUM_SHELVES_COL*(GAP_SIZE_COL + SHELF_SIZE_COL) + GAP_SIZE_COL;
-int grid_area = num_rows*num_cols;
-
-// The total number of cells in the grid that denote shelving 
-int num_shelves = NUM_SHELVES_ROW*NUM_SHELVES_COL;
-
-int shelf_area = num_shelves * (SHELF_SIZE_ROW * SHELF_SIZE_COL);
-int walkable_area = grid_area - shelf_area;
-
-// The length of the longest side of a shelf
-int shelf_length = max(SHELF_SIZE_ROW, SHELF_SIZE_COL); 
-
-//int num_tickets = 2*shelf_length*num_shelves;
-
+int NUM_ACTIONS = 9;    /* The number of neighboring cells (including the current cell)
+                               that an agent can move to. */
 
 int main() {
+
+    int shelf_size_row;    // Row and column dimensions of a shelf
+    int shelf_size_col;     
+
+    int gap_size_row;      // Row and column distances between shelves
+    int gap_size_col;    
+
+    int num_shelves_row;   // The number of shelves along the row and column dimensions
+    int num_shelves_col;
+
+    cin >> shelf_size_row;  
+    cin >> shelf_size_col;
+
+    cin >> gap_size_row;
+    cin >> gap_size_col;
+
+    cin >> num_shelves_row;
+    cin >> num_shelves_col; 
+
+    cin.clear();
+
+    // Calculating the required number of rows and columns in the grid
+    int num_rows = num_shelves_row*(gap_size_row + shelf_size_row) + gap_size_row;
+    int num_cols = num_shelves_col*(gap_size_col + shelf_size_col) + gap_size_col;
+    int grid_area = num_rows*num_cols;
+
+    // The total number of cells in the grid that denote shelving 
+    int num_shelves = num_shelves_row*num_shelves_col;
+
+    int shelf_area = num_shelves * (shelf_size_row * shelf_size_col);
+    int walkable_area = grid_area - shelf_area;
+
+    // The length of the longest side of a shelf
+    int shelf_length = max(shelf_size_row, shelf_size_col); 
+
+    // The number of locations which hold a product
+    int num_tickets = 2*shelf_length*num_shelves;
+
 
     /* The grid has -1s at shelf locations and a unique id for 
        each cell denoting a walkable unit of floor space */
@@ -68,6 +80,10 @@ int main() {
     to location j (and vice-versa). */
     int distances_table[walkable_area][walkable_area];
 
+    // Ticket locations list
+    int ticket_locations[num_tickets];
+
+
     // Filling the grid with -1s where shelves are and a unique id for each
     // location without a shelf (i.e. a walkway).
     int id = 0;
@@ -75,8 +91,8 @@ int main() {
        for (int col = 0; col < num_cols; col++) {
 
             // Shelves exist at regular intervals just beyond each gap 
-            bool shelf_in_row = (row % (GAP_SIZE_ROW + SHELF_SIZE_ROW)) >= GAP_SIZE_ROW;
-            bool shelf_in_col = (col % (GAP_SIZE_COL + SHELF_SIZE_COL)) >= GAP_SIZE_COL;
+            bool shelf_in_row = (row % (gap_size_row + shelf_size_row)) >= gap_size_row;
+            bool shelf_in_col = (col % (gap_size_col + shelf_size_col)) >= gap_size_col;
             
             if (shelf_in_row && shelf_in_col) {
                 grid[row][col] = -1;
@@ -151,51 +167,9 @@ int main() {
         }
     }
     
+    
 
-
-    // Displaying the grid and transition matrix.
-    for (int i = 0; i < num_rows; ++i) {
-        for (int j = 0; j < num_cols; ++j) {
-            cout << grid[i][j] << " ";
-        }
-        cout << endl;
-    }  
-    cout << endl;
-
-    // for (int i = 0; i < walkable_area; ++i) {
-    //     for (int j = 0; j < NUM_ACTIONS; ++j) {
-    //         cout << transition_table[i][j] << " ";
-    //     }
-    //     cout << endl;
-    // }  
-    // cout << endl;
-
-    cout << "     ";
-    for (int i = 0; i < walkable_area; ++i) {
-        cout << i;
-        if (i < 10) {
-            cout << "   ";
-        }
-        else {
-            cout << "  ";
-        }
-    }
-    cout << endl << endl;
-
-    for (int i = 0; i < walkable_area; ++i) {
-        cout << i;
-        if (i < 10) {
-            cout << "    ";
-        }
-        else {
-            cout << "   ";
-        }
-        for (int j = 0; j < walkable_area; ++j) {
-            cout << distances_table[i][j] << "   ";
-        }
-        cout << endl;
-    }  
-    cout << endl;
+    cout << "HERE!" << endl;
 
 
 
