@@ -96,8 +96,7 @@ int main() {
             
             if (shelf_in_row && shelf_in_col) {
                 grid[row][col] = -1;
-            }
-            else {
+            } else {
                 grid[row][col] = id++;
             }
         }
@@ -168,11 +167,26 @@ int main() {
     }
     
     
+    // Storing all ticket locations
+    int num_tickets_found = 0;
+    bool lateral = shelf_size_col > shelf_size_row;
+    int i_max = (lateral ? num_rows : num_cols) - 1;
+    int j_max = (lateral ? num_cols : num_rows) - 1;
+    int index;
+    bool shelf_behind;
+    bool shelf_ahead;
 
-    cout << "HERE!" << endl;
-
-
-
-
+    for (int i = 0; i <= i_max; i++) {
+        for (int j = 0; j <= j_max; j++) {
+            index = grid[lateral ? i:j][lateral ? j:i];
+            if (index >= 0) {
+                shelf_behind = grid[lateral ? max(0,i-1) : j][lateral ? j : max(0,i-1)] < 0;
+                shelf_ahead = grid[lateral ? min(i_max,i+1) : j][lateral ? j : min(i_max,i+1)] < 0;
+                if (shelf_behind || shelf_ahead) {
+                    ticket_locations[num_tickets_found++] = index;
+                } 
+            }
+        }
+    }
     return 0;
 } 
