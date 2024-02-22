@@ -1,7 +1,8 @@
-#include <order.hpp>
+#include "order.hpp"
 
-Order::Order() {
-    
+Order::Order() {};
 
-}
+Order::Order(int *tickets) {
+    sample_space = tickets;
+};
 

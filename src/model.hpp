@@ -15,12 +15,17 @@
 #include <string.h>
 #include <algorithm> 
 #include <queue>  
+
+#include "order.hpp"
+#include "location.hpp"
+#include "picker.hpp"
+
 using namespace std;
 
 class Model {
     public:
         
-        int NUM_ACTIONS = 9;    /* The number of neighboring cells (including the current cell)
+        int num_actions;    /* The number of neighboring cells (including the current cell)
                                 that an agent can move to. */
 
         int shelf_size_row;    // Row and column dimensions of a shelf
@@ -38,7 +43,7 @@ class Model {
         int shelf_area;
         int walkable_area;
 
-        int num_agents;
+        int num_pickers;
 
 
         /* The grid has -1s at shelf locations and a unique id for 
@@ -62,12 +67,12 @@ class Model {
 
         /* Ticket locations list. The i^th index having value v indicates that
             that ticket number i is can be found at the location with an index of v.*/
-        int *ticket_locations; 
+        int *tickets; 
 
-        /* The j^th index having value u indicates that the j^th location has the agent 
-           with an id of v there. A value of -1 indicates that a location is empty. */
-        int *agents;
+        Location *locations;
 
-        Model(int shelf_r, int shelf_c, int gap_r, int gap_c, int num_r, int num_c, int num_agents);
+        Picker *pickers;
+
+        Model(int shelf_r, int shelf_c, int gap_r, int gap_c, int num_r, int num_c, int num_pickers);
 };
 

@@ -1,13 +1,13 @@
 #include <iostream>
 #include <string.h>
 #pragma once
+
 using namespace std;
 
-class Order {
+class Location {
     public:
-    
-    int* sample_space;
-    
-    Order();
-    Order(int *tickets);
+        
+    int index;
+
+   Location(int index);
 };

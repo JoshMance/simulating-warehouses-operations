@@ -1,6 +1,8 @@
 #include "model.hpp" 
 
-Model::Model(int shelf_r, int shelf_c, int gap_r, int gap_c, int num_r, int num_c, int num_agents) {
+Model::Model(int shelf_r, int shelf_c, int gap_r, int gap_c, int num_r, int num_c, int num_pickers) {
+
+    num_actions = 9;
 
     shelf_size_row  = shelf_r;
     shelf_size_col = shelf_c;
@@ -11,7 +13,7 @@ Model::Model(int shelf_r, int shelf_c, int gap_r, int gap_c, int num_r, int num_
     num_shelves_row = num_r;
     num_shelves_col = num_c;
 
-    num_agents = num_agents;
+    num_pickers = num_pickers;
 
     // Calculating the grid's required number of rows and columns
     num_rows = num_shelves_row*(gap_size_row + shelf_size_row) + gap_size_row;
@@ -40,11 +42,11 @@ Model::Model(int shelf_r, int shelf_c, int gap_r, int gap_c, int num_r, int num_
 
     transition_table = (int**) malloc(walkable_area * sizeof(int*));
     for (int i = 0; i < walkable_area; i++){
-        transition_table[i] = (int*) malloc(NUM_ACTIONS * sizeof(int));
+        transition_table[i] = (int*) malloc(num_actions * sizeof(int));
     }
 
     for (int i = 0; i < (walkable_area); i++){
-        for (int j = 0; j < NUM_ACTIONS; j++) {
+        for (int j = 0; j < num_actions; j++) {
             transition_table[i][j] = -1;
         }
     }   
@@ -59,14 +61,14 @@ Model::Model(int shelf_r, int shelf_c, int gap_r, int gap_c, int num_r, int num_
         }
     }
 
-    ticket_locations = (int*) malloc(num_tickets * sizeof(int));
+    tickets = (int*) malloc(num_tickets * sizeof(int));
     for (int i = 0; i < (num_tickets); i++){
-        ticket_locations[i] = -1;
+        tickets[i] = -1;
     }
 
-    agents = (int*) malloc(walkable_area * sizeof(int));
+    locations = (Location*) malloc(walkable_area * sizeof(Location));
     for (int i = 0; i < (walkable_area); i++){
-        ticket_locations[i] = 0;
+        locations[i] = Location(-1);
     }
 
     // Filling the grid with -1s where shelves are and a unique id for each
@@ -136,7 +138,7 @@ Model::Model(int shelf_r, int shelf_c, int gap_r, int gap_c, int num_r, int num_
                 if (current_id == destination_id) {break;}
 
                 int new_id;
-                for (int action_index = 0; action_index < NUM_ACTIONS; action_index++) {
+                for (int action_index = 0; action_index < num_actions; action_index++) {
                     new_id = transition_table[current_id][action_index];
                     if (new_id >= 0) {
                         if (!visited[new_id]) {
@@ -168,7 +170,7 @@ Model::Model(int shelf_r, int shelf_c, int gap_r, int gap_c, int num_r, int num_
                 shelf_behind = grid[lateral ? max(0,i-1) : j][lateral ? j : max(0,i-1)] < 0;
                 shelf_ahead = grid[lateral ? min(i_max,i+1) : j][lateral ? j : min(i_max,i+1)] < 0;
                 if (shelf_behind || shelf_ahead) {
-                    ticket_locations[num_tickets_found++] = index;
+                    tickets[num_tickets_found++] = index;
                 } 
             }
         }

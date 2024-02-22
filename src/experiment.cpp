@@ -24,9 +24,9 @@ int main() {
 
 
 
-   cout << model.walkable_area << "," << model.NUM_ACTIONS << ",";
+   cout << model.walkable_area << "," << model.num_actions << ",";
     for(int i = 0; i < model.walkable_area; i++) {
-        for(int j = 0; j < model.NUM_ACTIONS; j++) {
+        for(int j = 0; j < model.num_actions; j++) {
             cout << model.transition_table[i][j] << ",";
         }
     }  
