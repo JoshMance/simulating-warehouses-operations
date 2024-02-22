@@ -2,7 +2,7 @@
 
 Model::Model(int shelf_r, int shelf_c, int gap_r, int gap_c, int num_r, int num_c, int num_agents) {
 
-    shelf_size_row = shelf_r;
+    shelf_size_row  = shelf_r;
     shelf_size_col = shelf_c;
 
     gap_size_row = gap_r;
@@ -14,15 +14,15 @@ Model::Model(int shelf_r, int shelf_c, int gap_r, int gap_c, int num_r, int num_
     num_agents = num_agents;
 
     // Calculating the grid's required number of rows and columns
-    int num_rows = num_shelves_row*(gap_size_row + shelf_size_row) + gap_size_row;
-    int num_cols = num_shelves_col*(gap_size_col + shelf_size_col) + gap_size_col;
+    num_rows = num_shelves_row*(gap_size_row + shelf_size_row) + gap_size_row;
+    num_cols = num_shelves_col*(gap_size_col + shelf_size_col) + gap_size_col;
     int grid_area = num_rows*num_cols;
 
     // The total number of cells in the grid that denote shelving 
     int num_shelves = num_shelves_row*num_shelves_col;
 
-    int shelf_area = num_shelves * (shelf_size_row * shelf_size_col);
-    int walkable_area = grid_area - shelf_area;
+    shelf_area = num_shelves * (shelf_size_row * shelf_size_col);
+    walkable_area = grid_area - shelf_area;
 
     // The length of the longest side of a shelf
     int shelf_length = max(shelf_size_row, shelf_size_col); 
@@ -30,20 +30,51 @@ Model::Model(int shelf_r, int shelf_c, int gap_r, int gap_c, int num_r, int num_
     // The number of locations which hold a product
     int num_tickets = 2*shelf_length*num_shelves;
 
-    /* The grid has -1s at shelf locations and a unique id for 
-    each cell denoting a walkable unit of floor space */
-    int grid[num_rows][num_cols]; 
+    /* Allocating memory for the grid, transition_table, 
+    distances table, ticket locations list and agent locations list.*/
+    
+    grid = (int**) malloc(num_rows * sizeof(int*));
+    for (int i = 0; i < num_rows; i++){
+        grid[i] = (int*) malloc(num_cols * sizeof(int));
+    }
 
-    memset(transition_table, -1, sizeof(int) * walkable_area * NUM_ACTIONS);
-    memset(distances_table, 0, sizeof(int) * walkable_area * walkable_area);
-    memset(ticket_locations, -1,sizeof(int) * num_tickets);
-    memset(agents, -1,sizeof(int) * walkable_area);
+    transition_table = (int**) malloc(walkable_area * sizeof(int*));
+    for (int i = 0; i < walkable_area; i++){
+        transition_table[i] = (int*) malloc(NUM_ACTIONS * sizeof(int));
+    }
+
+    for (int i = 0; i < (walkable_area); i++){
+        for (int j = 0; j < NUM_ACTIONS; j++) {
+            transition_table[i][j] = -1;
+        }
+    }   
+
+    distances_table = (int**) malloc(walkable_area * sizeof(int*));
+    for (int i = 0; i < walkable_area; i++){
+        distances_table[i] = (int*) malloc(walkable_area * sizeof(int));
+    }
+    for (int i = 0; i < (walkable_area); i++){
+        for (int j = 0; j < walkable_area; j++) {
+            distances_table [i][j] = 0;
+        }
+    }
+
+    ticket_locations = (int*) malloc(num_tickets * sizeof(int));
+    for (int i = 0; i < (num_tickets); i++){
+        ticket_locations[i] = -1;
+    }
+
+    agents = (int*) malloc(walkable_area * sizeof(int));
+    for (int i = 0; i < (walkable_area); i++){
+        ticket_locations[i] = 0;
+    }
 
     // Filling the grid with -1s where shelves are and a unique id for each
     // location without a shelf (i.e. a walkway).
+
     int id = 0;
     for (int row = 0; row < num_rows; row++) {
-    for (int col = 0; col < num_cols; col++) {
+        for (int col = 0; col < num_cols; col++) {
 
             // Shelves exist at regular intervals just beyond each gap 
             bool shelf_in_row = (row % (gap_size_row + shelf_size_row)) >= gap_size_row;
@@ -55,7 +86,8 @@ Model::Model(int shelf_r, int shelf_c, int gap_r, int gap_c, int num_r, int num_
                 grid[row][col] = id++;
             }
         }
-    }
+    };
+
 
     /* Filling the transition table such that table[i][j] = k indicates 
     that an agent at location i will move to location k if they take action j.
@@ -64,7 +96,6 @@ Model::Model(int shelf_r, int shelf_c, int gap_r, int gap_c, int num_r, int num_
     If taking action j while at location i is impossible, then k = -1. */
     for (int row = 0; row < num_rows; row++) {
         for (int col = 0; col < num_cols; col++) {
-
             if (grid[row][col] >= 0) {
                 int move = 0;
                 for (int r = row-1; r <= row+1; r++) {
@@ -142,5 +173,7 @@ Model::Model(int shelf_r, int shelf_c, int gap_r, int gap_c, int num_r, int num_
             }
         }
     }
+
+
 };
 

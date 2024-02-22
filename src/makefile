@@ -1,16 +1,22 @@
 CXX = g++
 CXXFLAGS = -Wall -Wextra -std=c++11
 
-all: model-tester
+all: experiment
 
-model-tester: model.o model-tester.o
+experiment: model.o experiment.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-model.o: model.cpp model.hpp
+model.o: model.cpp order.cpp picker.cpp model.hpp
 	$(CXX) $(CXXFLAGS) -c model.cpp -o model.o
 
-model-tester.o: model-tester.cpp model.hpp
-	$(CXX) $(CXXFLAGS) -c model-tester.cpp -o model-tester.o
+order.o: order.cpp order.hpp
+	$(CXX) $(CXXFLAGS) -c order.cpp -o order.o
+
+picker.o: picker.cpp picker.hpp
+	$(CXX) $(CXXFLAGS) -c picker.cpp -o picker.o
+
+experiment.o: experiment.cpp model.hpp
+	$(CXX) $(CXXFLAGS) -c experiment.cpp -o experiment.o
 
 clean:
-	rm -f model-tester *.o
+	rm -f experiment *.o

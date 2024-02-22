@@ -32,7 +32,18 @@ class Model {
         int num_shelves_row;   // The number of shelves along the row and column dimensions
         int num_shelves_col;
 
+        int num_rows;
+        int num_cols;
+
+        int shelf_area;
+        int walkable_area;
+
         int num_agents;
+
+
+        /* The grid has -1s at shelf locations and a unique id for 
+            each cell denoting a walkable unit of floor space */
+        int **grid; 
 
         /* Each row corresponds to a unique cell of walkable floor space 
             in the grid, with the id number of that location in the grid being the 
@@ -41,21 +52,21 @@ class Model {
             first column being "up 1, left 1". A -1 is found if a movement direction 
             is not possible from some location (i.e. a collision with either a shelf 
             or the edge of the environment would occur).*/
-        int transition_table[0][0]; 
+        int **transition_table; 
 
         /* Holds the distances between any two cells of walkable floor space in 
             the grid. The cells are indexed according to the unique id used in the grid
             i.e. distances_table[i][j] = 1 would indicate that the location i is adjacent 
             to location j (and vice-versa). */
-        int distances_table[0][0];
+        int **distances_table;
 
         /* Ticket locations list. The i^th index having value v indicates that
             that ticket number i is can be found at the location with an index of v.*/
-        int ticket_locations[0]; 
+        int *ticket_locations; 
 
         /* The j^th index having value u indicates that the j^th location has the agent 
            with an id of v there. A value of -1 indicates that a location is empty. */
-        int agents[0];
+        int *agents;
 
         Model(int shelf_r, int shelf_c, int gap_r, int gap_c, int num_r, int num_c, int num_agents);
 };
