@@ -67,9 +67,7 @@ Model::Model(int shelf_r, int shelf_c, int gap_r, int gap_c, int num_r, int num_
     }
 
     locations = (Location*) malloc(walkable_area * sizeof(Location));
-    for (int i = 0; i < (walkable_area); i++){
-        locations[i] = Location(-1);
-    }
+
 
     // Filling the grid with -1s where shelves are and a unique id for each
     // location without a shelf (i.e. a walkway).

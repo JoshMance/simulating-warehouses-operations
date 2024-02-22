@@ -6,8 +6,8 @@ all: experiment
 experiment: model.o experiment.o
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-location.o: location.cpp location.hpp picker.cpp
-	$(CXX) $(CXXFLAGS) -c location.cpp -o location.o
+location.o: location.cpp location.hpp
+	$(CXX) $(CXXFLAGS) -c location.cpp -o location.o 
 
 model.o: model.cpp location.cpp order.cpp picker.cpp model.hpp
 	$(CXX) $(CXXFLAGS) -c model.cpp -o model.o

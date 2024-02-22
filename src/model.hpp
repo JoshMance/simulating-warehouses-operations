@@ -16,8 +16,8 @@
 #include <algorithm> 
 #include <queue>  
 
-#include "order.hpp"
 #include "location.hpp"
+#include "order.hpp"
 #include "picker.hpp"
 
 using namespace std;
