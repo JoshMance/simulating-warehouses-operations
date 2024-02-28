@@ -70,7 +70,8 @@ Model::Model(int shelf_r, int shelf_c, int gap_r, int gap_c, int num_r, int num_
 
 
     // Filling the grid with -1s where shelves are and a unique id for each
-    // location without a shelf (i.e. a walkway).
+    // location without a shelf (i.e. a walkway). 
+    // Also filling the locations array.
 
     int id = 0;
     for (int row = 0; row < num_rows; row++) {
@@ -83,7 +84,9 @@ Model::Model(int shelf_r, int shelf_c, int gap_r, int gap_c, int num_r, int num_
             if (shelf_in_row && shelf_in_col) {
                 grid[row][col] = -1;
             } else {
-                grid[row][col] = id++;
+                grid[row][col] = id;
+                locations[id] = Location(id);   
+                id++;
             }
         }
     };

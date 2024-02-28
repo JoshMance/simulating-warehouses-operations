@@ -14,34 +14,34 @@ int main() {
                 num_shelves_row, num_shelves_col, num_agents);
 
 
-    cout << model.num_rows << "," << model.num_cols << ",";
-    for(int i = 0; i < model.num_rows; i++) {
-        for(int j = 0; j < model.num_cols; j++) {
-            cout << model.grid[i][j] << ",";
-        }
-    }  
-    cout << endl;    
+//     cout << model.num_rows << "," << model.num_cols << ",";
+//     for(int i = 0; i < model.num_rows; i++) {
+//         for(int j = 0; j < model.num_cols; j++) {
+//             cout << model.grid[i][j] << ",";
+//         }
+//     }  
+//     cout << endl;    
 
 
 
-   cout << model.walkable_area << "," << model.num_actions << ",";
-    for(int i = 0; i < model.walkable_area; i++) {
-        for(int j = 0; j < model.num_actions; j++) {
-            cout << model.transition_table[i][j] << ",";
-        }
-    }  
-    cout << endl;
+//    cout << model.walkable_area << "," << model.num_actions << ",";
+//     for(int i = 0; i < model.walkable_area; i++) {
+//         for(int j = 0; j < model.num_actions; j++) {
+//             cout << model.transition_table[i][j] << ",";
+//         }
+//     }  
+//     cout << endl;
 
-    cout << model.walkable_area << "," << model.walkable_area << ",";
-    for(int i = 0; i < model.walkable_area; i++) {
-        for(int j = 0; j < model.walkable_area; j++) {
-            cout << model.distances_table[i][j] << ",";
-        }
-    }  
-    cout << endl;
+//     cout << model.walkable_area << "," << model.walkable_area << ",";
+//     for(int i = 0; i < model.walkable_area; i++) {
+//         for(int j = 0; j < model.walkable_area; j++) {
+//             cout << model.distances_table[i][j] << ",";
+//         }
+//     }  
+//     cout << endl;
 
 
 
   
-    return 0;
-}
+//     return 0;
+// }
