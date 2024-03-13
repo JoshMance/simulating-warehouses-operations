@@ -41,23 +41,9 @@ class Model {
         int num_cols;
 
         int shelf_area;
-        int walkable_area;
+        int num_locations;
 
         int num_pickers;
-
-
-        /* The grid has -1s at shelf locations and a unique id for 
-            each cell denoting a walkable unit of floor space */
-        int **grid; 
-
-        /* Each row corresponds to a unique cell of walkable floor space 
-            in the grid, with the id number of that location in the grid being the 
-            index of that row. Each column holds the index of the row (if any) that 
-            will be reached if an agent moves in the particular direction, with the 
-            first column being "up 1, left 1". A -1 is found if a movement direction 
-            is not possible from some location (i.e. a collision with either a shelf 
-            or the edge of the environment would occur).*/
-        int **transition_table; 
 
         /* Holds the distances between any two cells of walkable floor space in 
             the grid. The cells are indexed according to the unique id used in the grid
@@ -65,13 +51,7 @@ class Model {
             to location j (and vice-versa). */
         int **distances_table;
 
-        /* Ticket locations list. The i^th index having value v indicates that
-            that ticket number i is can be found at the location with an index of v.*/
-        int *tickets; 
-
         Location *locations;
-
-        Picker *pickers;
 
         Model(int shelf_r, int shelf_c, int gap_r, int gap_c, int num_r, int num_c, int num_pickers);
 };

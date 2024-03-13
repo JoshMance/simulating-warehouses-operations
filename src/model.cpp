@@ -2,8 +2,6 @@
 
 Model::Model(int shelf_r, int shelf_c, int gap_r, int gap_c, int num_r, int num_c, int num_pickers) {
 
-    num_actions = 9;
-
     shelf_size_row  = shelf_r;
     shelf_size_col = shelf_c;
 
@@ -15,6 +13,8 @@ Model::Model(int shelf_r, int shelf_c, int gap_r, int gap_c, int num_r, int num_
 
     num_pickers = num_pickers;
 
+    int **grid;
+
     // Calculating the grid's required number of rows and columns
     num_rows = num_shelves_row*(gap_size_row + shelf_size_row) + gap_size_row;
     num_cols = num_shelves_col*(gap_size_col + shelf_size_col) + gap_size_col;
@@ -24,7 +24,7 @@ Model::Model(int shelf_r, int shelf_c, int gap_r, int gap_c, int num_r, int num_
     int num_shelves = num_shelves_row*num_shelves_col;
 
     shelf_area = num_shelves * (shelf_size_row * shelf_size_col);
-    walkable_area = grid_area - shelf_area;
+    num_locations = grid_area - shelf_area;
 
     // The length of the longest side of a shelf
     int shelf_length = max(shelf_size_row, shelf_size_col); 
@@ -32,24 +32,11 @@ Model::Model(int shelf_r, int shelf_c, int gap_r, int gap_c, int num_r, int num_
     // The number of locations which hold a product
     int num_tickets = 2*shelf_length*num_shelves;
 
-    /* Allocating memory for the grid, transition_table, 
-    distances table, ticket locations list and agent locations list.*/
-    
+    // Allocating memory for the grid, distances table and locations array
     grid = (int**) malloc(num_rows * sizeof(int*));
     for (int i = 0; i < num_rows; i++){
         grid[i] = (int*) malloc(num_cols * sizeof(int));
     }
-
-    transition_table = (int**) malloc(walkable_area * sizeof(int*));
-    for (int i = 0; i < walkable_area; i++){
-        transition_table[i] = (int*) malloc(num_actions * sizeof(int));
-    }
-
-    for (int i = 0; i < (walkable_area); i++){
-        for (int j = 0; j < num_actions; j++) {
-            transition_table[i][j] = -1;
-        }
-    }   
 
     distances_table = (int**) malloc(walkable_area * sizeof(int*));
     for (int i = 0; i < walkable_area; i++){
@@ -61,17 +48,10 @@ Model::Model(int shelf_r, int shelf_c, int gap_r, int gap_c, int num_r, int num_
         }
     }
 
-    tickets = (int*) malloc(num_tickets * sizeof(int));
-    for (int i = 0; i < (num_tickets); i++){
-        tickets[i] = -1;
-    }
-
     locations = (Location*) malloc(walkable_area * sizeof(Location));
 
-
-    // Filling the grid with -1s where shelves are and a unique id for each
-    // location without a shelf (i.e. a walkway). 
-    // Also filling the locations array.
+    // Finding all locations (i.e. places without shelves). Placing a unique,
+    // value in the grid, and initialising the location in the location array.
 
     int id = 0;
     for (int row = 0; row < num_rows; row++) {
@@ -92,32 +72,31 @@ Model::Model(int shelf_r, int shelf_c, int gap_r, int gap_c, int num_r, int num_
     };
 
 
-    /* Filling the transition table such that table[i][j] = k indicates 
-    that an agent at location i will move to location k if they take action j.
-    The nine columns represent the at most eight possible directions in a 
-    2d cell system along with the action of not moving. 
-    If taking action j while at location i is impossible, then k = -1. */
+    /* Storing the adjacent locations of each location.*/
     for (int row = 0; row < num_rows; row++) {
         for (int col = 0; col < num_cols; col++) {
             if (grid[row][col] >= 0) {
-                int move = 0;
                 for (int r = row-1; r <= row+1; r++) {
                     for (int c = col-1; c <= col+1; c++) {
                         // Ensuring actions do not lead outside the grid 
                         if ((r >= 0 && r < num_rows) && (c >= 0 && c < num_cols))  {
                             if (grid[r][c] >= 0) {
-                                // grid[row][col] returns a unique indexing id 
-                                transition_table[grid[row][col]][move] = grid[r][c];
+    
+                                Location *source = &locations[grid[row][col]];
+                                Location *destination = &locations[grid[r][c]];
+
+                                source->neighbours[source->num_adj] = destination;
+                                source->num_adj++;
+                                source->neighbours = realloc(source->num_adj * sizeof(*Location))
                             }
                         }
-                        move++; 
                     }   
                 } 
             }
         }
     }
 
-    // Filling the minimum distances table using a BFS.
+    // Filling the (minimum) distances table using a BFS.
     for (int source_id = 0; source_id < walkable_area; source_id++) {
         for (int destination_id = source_id; destination_id < walkable_area; destination_id++) { 
         
